@@ -26,12 +26,13 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: 'Restore Project Dependencies Using Mvn'
-        shell: pwsh
-        run: |
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+        with:
+          arguments: build
+          gradle-version: '6.5'
+      -  run: |
           pushd './${{ env.PACKAGE_DIRECTORY }}'
-          mvn clean package
-          popd
           tree
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
