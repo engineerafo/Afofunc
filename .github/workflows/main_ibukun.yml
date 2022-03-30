@@ -4,9 +4,7 @@
 name: Build and deploy Java project to Azure Function App - Ibukun
 
 on:
-  push:
-    branches:
-      - main
+  
   workflow_dispatch:
 
 env:
