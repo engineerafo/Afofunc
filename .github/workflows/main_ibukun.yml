@@ -93,14 +93,8 @@ jobs:
             "build.int.us": {
               "gradlefile1": "build.int.us",
 
-            },
-            
-             {
-            "build.int.eu": {
+            "build.int.eu": 
               "gradlefile2": "build.int.eu",
-              
-            
-            },
 
             },
             ".*": {
