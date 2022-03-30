@@ -86,7 +86,6 @@ jobs:
           
           
       - name: Build and deploy
-        if: choice = build.int.us
         run: |
            
             cp build.int.us build.gradle
