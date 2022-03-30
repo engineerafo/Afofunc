@@ -24,19 +24,19 @@ on:
   
   
     inputs:
-       environment:
-        type: environment
-        description: Select the environment
-       boolean:
-        type: boolean
-        description: True or False
+      
        choice:
         type: choice
         description: Make a choice
         options:
-        - build.int.us
-        - build.int.eu
+        - int.us
+        - int.eu
         - build.gradle
+       copy_tags:
+         description: 'True to Copy'
+         required: true
+         type: boolean
+          
         
         
 jobs:
@@ -49,13 +49,13 @@ jobs:
     steps:
      
     
-      - uses:  actions/checkout@v2
+   #  - uses:  actions/checkout@v2
 
-      - name: greet
-        run: | 
-          echo "environment is ${{ github.event.inputs.environment }}"
-          echo "boolean is ${{ github.event.inputs.boolean }}"
-          echo "choice is ${{ github.event.inputs.choice }}"
+    #  - name: greet
+    #    run: | 
+    #      echo "environment is ${{ github.event.inputs.environment }}"
+     #     echo "boolean is ${{ github.event.inputs.boolean }}"
+      #    echo "choice is ${{ github.event.inputs.choice }}"
           
   
    
@@ -83,44 +83,29 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    
-      - uses: kanga333/variable-mapper@master
-        id: export
-        with:
-         key: ${{ github.event.inputs.environment }}"
-         map: |
-          {
-            "build.int.us": {
-              "gradlefile1": "build.int.us",
-
-            "build.int.eu": 
-              "gradlefile2": "build.int.eu",
-
-            },
-            ".*": {
-              "gradlefile3": "build.gradle",
-            }
-          }
-         export_to: env 
-         mode: fill
-      - name: Echo environment and output
-        run: |
-         echo ${{ env.gradlefile1 }}
-         echo ${{ env.gradlefile2 }}
-         echo ${{ env.gradlefile3 }}
+          
           
       - name: Build and deploy
+        
         run: |
+            if: ${{ github.event.inputs.choice == 'int.eu' }}
+            run: cp build.int.eu build.gradle
+            if: ${{ github.event.inputs.choice == 'int.us' }}
+             run: cp build.int.us build.gradle
            
-            #cp build.int.us build.gradle
             gradle azureFunctionsDeploy
 
-    
-          
-      - run: tree
+  
           
       
 
         
    
+
+
+      
+
+        
+   
+
 
