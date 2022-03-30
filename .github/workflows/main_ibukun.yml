@@ -1,44 +1,103 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Java project to Azure Function App - Ibukun
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
 
-on:
-  
-  workflow_dispatch:
+
+name: Build and deploy Java project to Azure Platform
+
 
 env:
-  AZURE_FUNCTIONAPP_NAME: Ibukun # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_NAME: parisfunction # set this to your function app name on Azure
   PACKAGE_DIRECTORY: '.' # set this to the directory which contains pom.xml file
   JAVA_VERSION: '11' # set this to the java version to use
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
+on:
+  workflow_dispatch:
+  
+  
+    inputs:
+       environment:
+        type: environment
+        description: Select the environment
+       boolean:
+        type: boolean
+        description: True or False
+       choice:
+        type: choice
+        description: Make a choice
+        options:
+        - build.int.us
+        - build.int.eu
+        - build.gradle
+        
+        
 jobs:
-  build-and-deploy:
+  build:
+    permissions:
+     contents: read
+     id-token: write
     runs-on: ubuntu-latest
+
     steps:
+     
+    
+      - uses:  actions/checkout@v2
+
+      - name: greet
+        run: | 
+          echo "environment is ${{ github.event.inputs.environment }}"
+          echo "boolean is ${{ github.event.inputs.boolean }}"
+          echo "choice is ${{ github.event.inputs.choice }}"
+          
+  
+   
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v2
-
+         
+  
+      - name: 'Install az func core tool'
+        run: |
+          wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo apt-get install azure-functions-core-tools-4
+          
       - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v1
         with:
           java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'  
+          
+          
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          
+          
+      - name: Build and deploy
+        if: choice = build.int.us
+        run: |
+           
+            cp build.int.us build.gradle
+            gradle azureFunctionsDeploy
 
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
-        with:
-          arguments: build
-          gradle-version: '6.5'
-      -  run: |
-          pushd './${{ env.PACKAGE_DIRECTORY }}'
-          popd
-          tree
-      - name: 'Run Azure Functions Action'
-        uses: Azure/functions-action@v1
-        id: fa
-        with:
-          app-name: 'Ibukun'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F409F5FAAAC746FD8FEC66F32A3854B6 }}
-          package: '${{ env.PACKAGE_DIRECTORY }}'
-          respect-pom-xml: true
+    
+          
+      - run: tree
+          
+      
+
+        
+   
+
