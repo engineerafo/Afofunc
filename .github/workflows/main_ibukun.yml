@@ -32,10 +32,10 @@ on:
         - int.us
         - int.eu
         - build.gradle
-       copy_tags:
-         description: 'True to Copy'
-         required: true
-         type: boolean
+       #copy_tags:
+        # description: 'True to Copy'
+        # required: true
+         #type: boolean
           
         
         
