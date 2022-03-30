@@ -24,7 +24,7 @@ repositories {
 
 azurefunctions {
     resourceGroup = 'java-functions-group'
-    appName = 'Afoakfunct'
+    appName = 'nawAfoakfunct'
     pricingTier = 'Consumption'
     region = 'westus'
     runtime {
