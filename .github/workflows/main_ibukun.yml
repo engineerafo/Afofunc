@@ -95,11 +95,11 @@ jobs:
             elif ${{ github.event.inputs.choice == 'INT-US' }}
             then
               cp build.int.us build.gradle
-            else
+            fi
                gradle azureFunctionsDeploy
 
            
-            gradle azureFunctionsDeploy
+
 
   
           
