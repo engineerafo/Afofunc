@@ -88,10 +88,14 @@ jobs:
       - name: Build and deploy
         
         run: |
-            if: ${{ 'github.event.inputs.choice == "INT-EU" ' }}
-            run: cp build.int.eu build.gradle
-            if: ${{ 'github.event.inputs.choice == "INT-US" ' }}
-             run: cp build.int.us build.gradle
+           
+            if ${{ github.event.inputs.choice == 'INT-EU' }}
+              cp build.int.eu build.gradle
+            if ${{ github.event.inputs.choice == 'INT-US' }}
+              cp build.int.us build.gradle
+           
+            gradle azureFunctionsDeploy
+
            
             gradle azureFunctionsDeploy
 
